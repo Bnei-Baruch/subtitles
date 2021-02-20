@@ -3,7 +3,7 @@ import Keycloak from 'keycloak-js';
 const userManagerConfig = {
   url: 'https://accounts.kab.info/auth',
   realm: 'main',
-  clientId: 'trl', // TODO: Replace trl with ...
+  clientId: 'subtitles',
   scope: 'profile',
   enableLogging: true,
 };
@@ -45,7 +45,7 @@ const renewToken = (retry) => {
 };
 
 const checkPermissions = (user) => {
-  const gxy_group = kc.hasRealmRole('trl_user'); // TODO: change trl_user to ...
+  const gxy_group = kc.hasRealmRole('subtitles_admin');
   if (gxy_group) {
     delete user.roles;
     user.role = 'user';
