@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { AppBar, Button, CircularProgress, Toolbar, Typography } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -8,23 +8,28 @@ import { getUser, signIn, signOut } from '../../actions/auth';
 import LanguageSelector from '../Language/Language';
 import OnOffSwitch from '../Onoff/Onoff';
 import { setBroadcast } from '../../actions/subtitles';
+import clsx from 'clsx';
 
 const Navbar = () => {
   const user      = useSelector((state) => state.auth.user);
   const loading   = useSelector((state) => state.auth.loading);
   const disabled  = useSelector((state) => state.auth.disabled);
   const broadcast = useSelector((state) => state.subtitles.broadcast);
+  const language  = useSelector((state) => state.language);
   const dispatch  = useDispatch();
   const classes   = useStyles();
   const history   = useHistory();
+  const location  = useLocation();
 
-  const userLogin = () => dispatch(signIn(window.location.href));
+  const userLogin = () => dispatch(signIn(language));
 
   const userLogout = () => dispatch(signOut());
 
-  const edit = () => history.push('/edit');
+  const edit   = () => history.push('/edit');
+  const main   = () => history.push('/');
+  const inEdit = location.pathname === '/edit';
 
-  const handleBroadcast = (event) => dispatch(setBroadcast(event.target.checked));
+  const handleBroadcast = (event) => dispatch(setBroadcast());
 
   useEffect(() => dispatch(getUser()), [dispatch]);
 
@@ -39,8 +44,8 @@ const Navbar = () => {
           <>
             <OnOffSwitch broadcast={broadcast} handleBroadcast={handleBroadcast} />
             <LanguageSelector />
-            <Button variant="contained" className={classes.margin} color="primary" onClick={() => edit()}>Edit</Button>
-            <Button variant="contained" color="secondary" onClick={() => userLogout()} className={classes.logout}>Logout</Button>
+            <Button variant="contained" className={clsx(classes.margin, classes.button)} color="primary" onClick={inEdit ? main : edit}>{inEdit ? 'Main' : 'Edit'}</Button>
+            <Button variant="contained" color="secondary" onClick={() => userLogout()} className={classes.button}>Logout</Button>
           </>
         ) : (
           <Button variant="contained" color="primary" disabled={disabled} onClick={() => userLogin()}>Sign In</Button>

@@ -1,11 +1,12 @@
 import { LOGOUT, SET_USER } from '../constants/actionTypes';
 import { getUser as kcGetUser, kc } from '../components/UserManagement/UserManagement';
 
-export const signIn = (user, redirectUri) => async (dispatch) => {
+export const signIn = (language) => async (dispatch) => {
+  if (language === 'he') {
+    language = 'il';
+  }
   try {
-    kc.login({ redirectUri });
-
-    dispatch({ type: SET_USER, user });
+    kc.login({ redirectUri: window.location.href, language });
   } catch (error) {
     console.log(error);
   }

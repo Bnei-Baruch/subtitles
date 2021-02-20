@@ -31,6 +31,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy": "yarn build; cp -r build/* /media/sf_D_DRIVE/projects/slides/",
     "test": "react-scripts test"
   },
   "eslintConfig": {

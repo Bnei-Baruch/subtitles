@@ -35,5 +35,12 @@ export default makeStyles((theme) => ({
   onOff: {
     margin: theme.spacing(1),
     minWidth: 120,
-  }
+    textTransform: 'uppercase',
+  },
+  onAir: {
+    backgroundColor: 'green',
+  },
+  offAir: {
+    backgroundColor: 'red',
+  },
 }));

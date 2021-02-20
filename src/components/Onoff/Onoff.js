@@ -1,20 +1,18 @@
-import { FormControl, Grid, Switch } from '@material-ui/core';
+import { Button, FormControl } from '@material-ui/core';
 
 import useStyles from './styles';
 import React from 'react';
+import clsx from 'clsx';
 
 const OnOffSwitch = ({ broadcast, handleBroadcast }) => {
   const classes = useStyles();
 
   return (
     <FormControl variant="outlined" className={classes.onOff}>
-      <Grid component="label" container alignItems="center" spacing={1}>
-        <Grid item>Off</Grid>
-        <Grid item>
-          <Switch classes={classes} checked={broadcast} onChange={handleBroadcast} name="broadcast" />
-        </Grid>
-        <Grid item>On</Grid>
-      </Grid>
+      <Button variant="contained" className={clsx({
+        [classes.onAir]: broadcast,
+        [classes.offAir]: !broadcast,
+      })} size='small' onClick={handleBroadcast}>{broadcast ? 'On Air ' : 'Off Air'}</Button>
     </FormControl>
   );
 };
