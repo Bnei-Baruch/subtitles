@@ -5,21 +5,22 @@ import TableSlides from './TableSlides';
 import { addFile as af, deleteRows as dr } from '../../actions/subtitles';
 import { useEditStyles } from './stylesTableSlides';
 import { parseFile } from '../../helpers/parseFile';
-import Preview from '../Preview/Preview';
+import Preview from './Preview/Preview';
 
-const setNewFile = async (files, addFile) => {
-  const fileName = files[0];
-  let reader     = new FileReader();
-  reader.readAsText(fileName);
-  reader.onload = () => {
-    const [file, err] = parseFile(reader.result);
+const setNewFiles = async (files, addFile) => {
+  Array.from(files).forEach((fileName) => {
+    let reader = new FileReader();
+    reader.readAsText(fileName);
+    reader.onload = () => {
+      const [file, err] = parseFile(reader.result);
 
-    if (err.length !== 0) {
-      alert('Parsing error(s): ' + err);
-      return;
-    }
-    addFile(file);
-  };
+      if (err.length !== 0) {
+        alert(`Parsing error(s) for ${fileName}: ${err}`);
+        return;
+      }
+      addFile(file);
+    };
+  });
 };
 
 const deleteCallback = (names, deleteRows) => deleteRows(names);
@@ -52,7 +53,7 @@ const Edit = () => {
             <Paper className={classes.paper}>
               <Button variant="contained" className={classes.fileInput} component="label">
                 Upload New Subtitles
-                <input type="file" hidden onChange={(e) => setNewFile(e.target.files, addFile)} />
+                <input type="file" hidden multiple onChange={(e) => setNewFiles(e.target.files, addFile)} />
               </Button>
             </Paper>
             <Preview />

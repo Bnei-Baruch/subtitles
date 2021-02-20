@@ -21,7 +21,7 @@ const Navbar = () => {
   const history   = useHistory();
   const location  = useLocation();
 
-  const userLogin = () => dispatch(signIn(language));
+  const userLogin = () => dispatch(signIn(language.language));
 
   const userLogout = () => dispatch(signOut());
 

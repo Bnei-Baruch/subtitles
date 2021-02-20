@@ -1,4 +1,5 @@
 import * as actionType from '../constants/actionTypes';
+import { SET_CURRENT_BOOK } from '../constants/actionTypes';
 
 const initialState = {
   broadcast: false,
@@ -22,6 +23,10 @@ const subtitlesReducer = (state = initialState, action) => {
     return { ...state, rows };
   case actionType.SET_SELECTED:
     return { ...state, selected: action.selected };
+  case actionType.SET_CURRENT_BOOK:
+    const { bookId } = action;
+    const currentBook = state.books.filter((book) => book.id === bookId);
+    return { ...state, currentBook: currentBook?.[0] };
   default:
     return state;
   }

@@ -1,4 +1,4 @@
-import { ADD_FILE, DELETE_FILES, SET_BROADCAST, SET_SELECTED } from '../constants/actionTypes';
+import { ADD_FILE, DELETE_FILES, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED } from '../constants/actionTypes';
 
 export const setBroadcast = () => async (dispatch) => {
   try {
@@ -27,6 +27,14 @@ export const addFile = (file) => async (dispatch) => {
 export const setSelected = (selected = []) => async (dispatch) => {
   try {
     dispatch({ type: SET_SELECTED, selected });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const setCurrentBook = (bookId) => async (dispatch) => {
+  try {
+    dispatch({ type: SET_CURRENT_BOOK, bookId });
   } catch (error) {
     console.log(error);
   }
