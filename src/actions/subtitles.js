@@ -1,8 +1,8 @@
 import { ADD_FILE, DELETE_FILES, SET_BROADCAST, SET_SELECTED } from '../constants/actionTypes';
 
-export const setBroadcast = (broadcast) => async (dispatch) => {
+export const setBroadcast = () => async (dispatch) => {
   try {
-    dispatch({ type: SET_BROADCAST, broadcast });
+    dispatch({ type: SET_BROADCAST });
   } catch (error) {
     console.log(error);
   }

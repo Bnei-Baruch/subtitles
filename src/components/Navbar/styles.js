@@ -43,6 +43,8 @@ export default makeStyles((theme) => ({
   margin: {
     margin: '0 8px',
   },
-  logout: {
+  button: {
+    margin: theme.spacing(1),
+    minWidth: 90,
   }
 }));

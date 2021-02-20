@@ -11,7 +11,7 @@ const subtitlesReducer = (state = initialState, action) => {
 
   switch (type) {
   case actionType.SET_BROADCAST:
-    return { ...state, broadcast: action.broadcast };
+    return { ...state, broadcast: !state.broadcast };
   case actionType.ADD_FILE:
     const { file } = action;
     return { ...state, books: [...state.books, file] };
