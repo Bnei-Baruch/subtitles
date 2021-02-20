@@ -38,9 +38,9 @@ export default makeStyles((theme) => ({
     textTransform: 'uppercase',
   },
   onAir: {
-    backgroundColor: 'green',
+    backgroundColor: 'red',
   },
   offAir: {
-    backgroundColor: 'red',
+    backgroundColor: 'green',
   },
 }));
