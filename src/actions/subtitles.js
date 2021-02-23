@@ -1,4 +1,4 @@
-import { ADD_FILE, DELETE_FILES, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED } from '../constants/actionTypes';
+import { ADD_BOOK, DELETE_BOOKS, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED_BOOK } from '../constants/actionTypes';
 
 export const setBroadcast = () => async (dispatch) => {
   try {
@@ -8,17 +8,30 @@ export const setBroadcast = () => async (dispatch) => {
   }
 };
 
-export const deleteRows = (names) => async (dispatch) => {
+export const deleteRows = (ids) => async (dispatch) => {
   try {
-    dispatch({ type: DELETE_FILES, names });
+    dispatch({ type: DELETE_BOOKS, ids });
   } catch (error) {
     console.log(error);
   }
 };
 
-export const addFile = (file) => async (dispatch) => {
+export const addFile = (book) => async (dispatch) => {
   try {
-    dispatch({ type: ADD_FILE, file });
+    dispatch({ type: ADD_BOOK, book });
+    // axios
+    //   .post('//localhost:4000/', {
+    //     title: book.title,
+    //     content: book.content,
+    //   })
+    //   .then(res => {
+    //     book.id = res.data;
+    //     dispatch({ type: ADD_BOOK, book });
+    //     console.log('Book added: ', res.data);
+    //   })
+    //   .catch(err => {
+    //     alert(`Book not added: ${err.message}`);
+    //   });
   } catch (error) {
     console.log(error);
   }
@@ -26,7 +39,7 @@ export const addFile = (file) => async (dispatch) => {
 
 export const setSelected = (selected = []) => async (dispatch) => {
   try {
-    dispatch({ type: SET_SELECTED, selected });
+    dispatch({ type: SET_SELECTED_BOOK, selected });
   } catch (error) {
     console.log(error);
   }
