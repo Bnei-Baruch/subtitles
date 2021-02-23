@@ -13,14 +13,16 @@ export const join = async (lang) => {
   currentLang = null;
   return new Promise((res, rej) => {
     const options = { qos: 1, nl: true };
-    console.log('[mqtt] Before subscribe: ', lang);
-    mqttClient.subscribe(`${MQTT_TOPIC_BASE}${lang}`, options, (err) => {
+    const topic   = `${MQTT_TOPIC_BASE}${lang}`;
+    console.log('[mqtt] Before subscribe: ', topic);
+    mqttClient.subscribe(topic, options, (err) => {
       console.log('[mqtt] On request from subscribe', err);
       if (!err) {
         currentLang = lang;
-        return res();
+        res();
+      } else {
+        rej(console.error('[mqtt] Error: ', err));
       }
-      rej(console.error('[mqtt] Error: ', err));
     });
   });
 };
@@ -29,12 +31,16 @@ export const exit = async () => {
   if (!currentLang) return;
   if (!mqttClient?.connected) await initMqtt();
   return new Promise((res, rej) => {
-    console.log('[mqtt] Before exit: ', currentLang);
-    mqttClient.unsubscribe(`${MQTT_TOPIC_BASE}${currentLang}`, {}, (err) => {
+
+    const topic = `${MQTT_TOPIC_BASE}${currentLang}`;
+    console.log('[mqtt] Before exit: ', topic);
+    mqttClient.unsubscribe(topic, {}, (err) => {
       console.log('[mqtt] On request from exit', err);
-      if (!err)
-        return res();
-      rej(console.error('[mqtt] Error: ', err));
+      if (!err) {
+        res();
+      } else {
+        rej(console.error('[mqtt] Error: ', err));
+      }
     });
   });
 };
@@ -45,12 +51,16 @@ export const send = async (msg, retain = true, lang) => {
   return new Promise((res, rej) => {
     let options = { qos: 1, retain };
     const data  = { 'message': msg, 'type': 'subtitles', 'language': lang };
-    console.log('[mqtt] Before send: ', lang);
-    mqttClient.publish(`${MQTT_TOPIC_BASE}${lang}`, JSON.stringify(data), options, (err) => {
+
+    const topic = `${MQTT_TOPIC_BASE}${lang}`;
+    console.log('[mqtt] Before send: ', topic);
+    mqttClient.publish(topic, JSON.stringify(data), options, (err) => {
       console.log('[mqtt] On request from send', err);
-      if (!err)
-        return res({ msg, lang });
-      return rej(console.error('[mqtt] Error: ', err));
+      if (!err) {
+        res({ msg, lang });
+      } else {
+        rej(console.error('[mqtt] Error: ', err));
+      }
     });
   });
 };

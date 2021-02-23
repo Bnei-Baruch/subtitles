@@ -7,7 +7,7 @@ export const setBroadcast = (lang, prevBroadcast, currentSlide) => async (dispat
     if (prevBroadcast)
       await send('clear', true, lang);
     else
-      await send(currentSlide.content, true, lang);
+      currentSlide?.content && await send(currentSlide.content, true, lang);
     dispatch({ type: SET_BROADCAST });
   } catch (error) {
     console.log(error);
