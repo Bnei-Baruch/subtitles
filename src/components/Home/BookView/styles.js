@@ -11,6 +11,9 @@ export default makeStyles((theme) => ({
     direction: 'rtl',
   },
   preview: {},
+  selected: {
+    background: '#FF6666'
+  },
   vAlign: {
     display: 'flex',
     alignItems: 'center',

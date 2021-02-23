@@ -11,15 +11,16 @@ import { setBroadcast } from '../../actions/subtitles';
 import clsx from 'clsx';
 
 const Navbar = () => {
-  const user      = useSelector((state) => state.auth.user);
-  const loading   = useSelector((state) => state.auth.loading);
-  const disabled  = useSelector((state) => state.auth.disabled);
-  const broadcast = useSelector((state) => state.subtitles.broadcast);
-  const language  = useSelector((state) => state.language);
-  const dispatch  = useDispatch();
-  const classes   = useStyles();
-  const history   = useHistory();
-  const location  = useLocation();
+  const user         = useSelector((state) => state.auth.user);
+  const loading      = useSelector((state) => state.auth.loading);
+  const disabled     = useSelector((state) => state.auth.disabled);
+  const broadcast    = useSelector((state) => state.subtitles.broadcast);
+  const language     = useSelector((state) => state.language);
+  const currentSlide = useSelector((state) => state.slide.selectedByLang[language.language]);
+  const dispatch     = useDispatch();
+  const classes      = useStyles();
+  const history      = useHistory();
+  const location     = useLocation();
 
   const userLogin = () => dispatch(signIn(language.language));
 
@@ -29,7 +30,7 @@ const Navbar = () => {
   const main   = () => history.push('/');
   const inEdit = location.pathname === '/edit';
 
-  const handleBroadcast = (event) => dispatch(setBroadcast());
+  const handleBroadcast = (event) => dispatch(setBroadcast(language.language, broadcast, currentSlide));
 
   useEffect(() => dispatch(getUser()), [dispatch]);
 

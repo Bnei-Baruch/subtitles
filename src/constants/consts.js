@@ -1,4 +1,4 @@
-export const languages = [
+export const languages        = [
   { key: 'he', name: 'Hebrew' },
   { key: 'ru', name: 'Russian' },
   { key: 'en', name: 'English' },
@@ -27,3 +27,5 @@ export const languages = [
   { key: 'in', name: 'Hindi' },
   { key: 'ir', name: 'Persian' },
 ];
+export const MQTT_BASE        = 'wss://mqtt.kli.one/';
+export const MQTT_TOPIC_BASE        = 'subtitles/galaxy/';

@@ -1,7 +1,13 @@
 import { ADD_FILE, DELETE_FILES, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED } from '../constants/actionTypes';
+import { send } from '../helpers/send';
 
-export const setBroadcast = () => async (dispatch) => {
+export const setBroadcast = (lang, prevBroadcast, currentSlide) => async (dispatch) => {
   try {
+    //resend slide if over to ON AIR
+    if (prevBroadcast)
+      await send('clear', true, lang);
+    else
+      await send(currentSlide, true, lang);
     dispatch({ type: SET_BROADCAST });
   } catch (error) {
     console.log(error);
