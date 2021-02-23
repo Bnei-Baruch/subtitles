@@ -33,7 +33,7 @@ export const exit = async () => {
     mqttClient.unsubscribe(`${MQTT_TOPIC_BASE}${currentLang}`, {}, (err) => {
       console.log('[mqtt] On request from exit', err);
       if (!err)
-        res();
+        return res();
       rej(console.error('[mqtt] Error: ', err));
     });
   });

@@ -1,4 +1,4 @@
-import { ADD_BOOK, DELETE_BOOKS, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED_BOOK, SET_SELECTED } from '../constants/actionTypes';
+import { ADD_BOOK, DELETE_BOOKS, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED_BOOK } from '../constants/actionTypes';
 import { send } from '../helpers/send';
 
 export const setBroadcast = (lang, prevBroadcast, currentSlide) => async (dispatch) => {
@@ -7,7 +7,7 @@ export const setBroadcast = (lang, prevBroadcast, currentSlide) => async (dispat
     if (prevBroadcast)
       await send('clear', true, lang);
     else
-      await send(currentSlide, true, lang);
+      await send(currentSlide.content, true, lang);
     dispatch({ type: SET_BROADCAST });
   } catch (error) {
     console.log(error);
