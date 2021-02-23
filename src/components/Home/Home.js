@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Container, Grid, Grow, Paper, Typography } from '@material-ui/core';
 
 import useStyles from './styles';

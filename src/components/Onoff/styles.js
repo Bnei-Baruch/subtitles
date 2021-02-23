@@ -41,6 +41,6 @@ export default makeStyles((theme) => ({
     backgroundColor: 'red',
   },
   offAir: {
-    backgroundColor: 'green',
+    backgroundColor: 'gray',
   },
 }));
