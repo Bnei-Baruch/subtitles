@@ -1,14 +1,18 @@
 import { ADD_BOOK, DELETE_BOOKS, SET_BROADCAST, SET_CURRENT_BOOK, SET_SELECTED_BOOK } from '../constants/actionTypes';
 import { send } from '../helpers/send';
+import { CLEAR_MSG, ON_AIR_MSG } from '../constants/consts';
 
-export const setBroadcast = (lang, prevBroadcast, currentSlide) => async (dispatch) => {
+export const setBroadcast = (language, prevBroadcast, currentSlide) => async (dispatch) => {
   try {
     //resend slide if over to ON AIR
     if (prevBroadcast)
-      await send('clear', true, lang);
+      await send(CLEAR_MSG, true, language);
+    else if (!currentSlide)
+      await send(ON_AIR_MSG, true, language);
     else
-      currentSlide?.content && await send(currentSlide.content, true, lang);
-    dispatch({ type: SET_BROADCAST });
+      await send(currentSlide, true, language);
+
+    dispatch({ type: SET_BROADCAST, broadcast: !prevBroadcast });
   } catch (error) {
     console.log(error);
   }

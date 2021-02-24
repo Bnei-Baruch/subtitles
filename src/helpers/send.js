@@ -5,20 +5,20 @@ import { kc } from '../components/UserManagement/UserManagement';
 let mqttClient  = null;
 let currentLang = null;
 
-export const join = async (lang) => {
-  if (currentLang === lang) return;
+export const join = async (language) => {
+  if (currentLang === language) return;
   if (!mqttClient?.connected) await initMqtt();
 
   currentLang && await exit();
   currentLang = null;
   return new Promise((res, rej) => {
     const options = { qos: 1, nl: true };
-    const topic   = `${MQTT_TOPIC_BASE}${lang}`;
+    const topic   = `${MQTT_TOPIC_BASE}${language}`;
     console.log('[mqtt] Before subscribe: ', topic);
     mqttClient.subscribe(topic, options, (err) => {
       console.log('[mqtt] On request from subscribe', err);
       if (!err) {
-        currentLang = lang;
+        currentLang = language;
         res();
       } else {
         rej(console.error('[mqtt] Error: ', err));
@@ -45,24 +45,30 @@ export const exit = async () => {
   });
 };
 
-export const send = async (msg, retain = true, lang) => {
+export const send = async (msg, retain = true, language) => {
   if (!mqttClient?.connected) await initMqtt();
-  await join(lang);
+  await join(language);
   return new Promise((res, rej) => {
     let options = { qos: 1, retain };
-    const data  = { 'message': msg, 'type': 'subtitles', 'language': lang };
+    const data  = { 'message': msg, 'type': 'subtitles', language };
 
-    const topic = `${MQTT_TOPIC_BASE}${lang}`;
+    const topic = `${MQTT_TOPIC_BASE}${language}`;
     console.log('[mqtt] Before send: ', topic);
     mqttClient.publish(topic, JSON.stringify(data), options, (err) => {
       console.log('[mqtt] On request from send', err);
       if (!err) {
-        res({ msg, lang });
+        res({ msg, language });
       } else {
         rej(console.error('[mqtt] Error: ', err));
       }
     });
   });
+};
+
+export const getMqttEmitter = async () => {
+  if (!mqttClient?.connected) await initMqtt();
+  return mqttClient;
+
 };
 
 const initMqtt = async () => {
@@ -77,7 +83,7 @@ const initMqtt = async () => {
     const options = {
       keepalive: 10,
       connectTimeout: 10 * 1000,
-      clientId: id,
+      clientId: id + Date.now(),
       protocolId: 'MQTT',
       protocolVersion: 5,
       clean: true,

@@ -16,7 +16,7 @@ const BookView = () => {
   const content      = currentBook?.content || [];
 
   const user         = useSelector((state) => state.auth.user);
-  const handleSelect = slide => dispatch(selectSlide({ slide, lang: language, user, broadcast }));
+  const handleSelect = slide => dispatch(selectSlide({ slide, language, user, broadcast }));
 
   return (
     <Container className={clsx(classes.preview, {

@@ -12,7 +12,9 @@ const subtitlesReducer = (state = initialState, action) => {
 
   switch (type) {
   case actionType.SET_BROADCAST:
-    return { ...state, broadcast: !state.broadcast };
+    const { broadcast } = action;
+    console.log('subtitlesReducer action: ', action);
+    return { ...state, broadcast };
   case actionType.ADD_BOOK:
     const { book } = action;
     return { ...state, books: [...state.books, book] };
