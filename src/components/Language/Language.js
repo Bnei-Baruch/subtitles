@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLang } from '../../actions/language';
 import { CLEAR_MSG, languages, ON_AIR_MSG } from '../../constants/consts';
 import { getMqttEmitter, join } from '../../helpers/send';
-import { SELECT_SLIDE_SUCCESS, SET_BROADCAST } from '../../constants/actionTypes';
+import { SELECT_SLIDE_SUCCESS, SET_BROADCAST, SET_CURRENT_BOOK } from '../../constants/actionTypes';
 
 const LanguageSelector = () => {
   const language = useSelector((state) => state.language.language);
@@ -15,9 +15,10 @@ const LanguageSelector = () => {
 
   useEffect(() => {
     initSubscriber();
-  }, []);
+  }, [language]);
 
   const initSubscriber = async () => {
+    dispatch({ type: SET_CURRENT_BOOK, bookId: -1 });
     const mq = await getMqttEmitter();
     join(language);
     console.log('initSubscriber: ', language);
