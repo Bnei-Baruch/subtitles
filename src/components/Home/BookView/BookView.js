@@ -5,6 +5,7 @@ import clsx from 'clsx';
 
 import useStyles from './styles';
 import { selectSlide } from '../../../actions/selectSlide';
+import { useRef } from 'react';
 
 const BookView = () => {
   const currentBook  = useSelector((state) => state.subtitles.currentBook);
@@ -15,13 +16,22 @@ const BookView = () => {
   const classes      = useStyles();
   const content      = currentBook?.content || [];
 
+  const defineRef = (ref, isSel) => {
+    if (!isSel || !ref) return;
+    ref.scrollIntoView();
+  };
+
   const user         = useSelector((state) => state.auth.user);
   const handleSelect = slide => dispatch(selectSlide({ slide, language, user, broadcast }));
 
   return (
-    <Container className={clsx(classes.preview, {
-      [classes.rtl]: language === 'he',
-    })} maxWidth="md" disableGutters>
+    <Container className={
+      clsx(
+        classes.preview,
+        { [classes.rtl]: language === 'he', },
+        classes.withScroll,
+      )
+    } maxWidth="md" disableGutters>
       {
         content.map((slide) => {
           const key = `${slide.page}-${slide.letter}-${slide.subletter}-${slide.revert}`;
@@ -32,6 +42,7 @@ const BookView = () => {
                 [classes.vAlign]: slide.isH,
                 [classes.selected]: currentSlide?.key === key
               })}
+              ref={r => defineRef(r, currentSlide?.key === key)}
               onClick={() => handleSelect({ ...slide, key })}
             >
               <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(slide.content) }}></div>
