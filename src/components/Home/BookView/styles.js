@@ -14,7 +14,7 @@ export default makeStyles((theme) => ({
   selected: {
     background: '#FF6666'
   },
-  withScroll: { maxHeight: '76VH', overflow: 'auto' },
+  withScroll: { maxHeight: '75VH', overflow: 'auto' },
   vAlign: {
     display: 'flex',
     alignItems: 'center',

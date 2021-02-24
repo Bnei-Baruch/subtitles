@@ -39,14 +39,34 @@ const Navbar = () => {
       <div className={classes.brandContainer}>
         <Typography component={Link} to="/" className={classes.heading} variant="h2" align="center">Subtitles</Typography>
         {loading && <CircularProgress variant='indeterminate' />}
+        {
+          user && (
+            <>
+              <LanguageSelector /><OnOffSwitch broadcast={broadcast} handleBroadcast={handleBroadcast} />
+            </>
+          )
+        }
       </div>
+
       <Toolbar className={classes.toolbar}>
         {user ? (
           <>
-            <OnOffSwitch broadcast={broadcast} handleBroadcast={handleBroadcast} />
-            <LanguageSelector />
-            <Button variant="contained" className={clsx(classes.margin, classes.button)} color="primary" onClick={inEdit ? main : edit}>{inEdit ? 'Main' : 'Edit'}</Button>
-            <Button variant="contained" color="secondary" onClick={() => userLogout()} className={classes.button}>Logout</Button>
+            <Button
+              variant="contained"
+              className={clsx(classes.margin, classes.button)}
+              color="primary"
+              onClick={inEdit ? main : edit}
+            >
+              {inEdit ? 'Main' : 'Edit'}
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => userLogout()}
+              className={classes.button}
+            >
+              Logout
+            </Button>
           </>
         ) : (
           <Button variant="contained" color="primary" disabled={disabled} onClick={() => userLogin()}>Sign In</Button>
