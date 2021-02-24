@@ -34,13 +34,17 @@ export default makeStyles((theme) => ({
   checked: {},
   onOff: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 180,
     textTransform: 'uppercase',
   },
-  onAir: {
+  onOffAir: {
     backgroundColor: 'red',
+    color: 'white',
+    textTransform: 'uppercase',
+    font: 'normal bold 36px/42px sans-serif',
+    marginLeft: '2em',
   },
   offAir: {
-    backgroundColor: 'gray',
+    backgroundColor: '#898282',
   },
 }));
