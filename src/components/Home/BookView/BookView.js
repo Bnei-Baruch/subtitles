@@ -5,7 +5,6 @@ import clsx from 'clsx';
 
 import useStyles from './styles';
 import { selectSlide } from '../../../actions/selectSlide';
-import { useRef } from 'react';
 
 const BookView = () => {
   const currentBook  = useSelector((state) => state.subtitles.currentBook);
