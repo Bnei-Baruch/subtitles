@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import VirtualWorkshopQuestion from '../subtitles/VirtualWorkshopQuestion';
 import GalaxyStream from './GalaxyStream';
+import { SubtitlesContainer } from '../subtitles/SubtitlesContainer';
 
 class VirtualStreaming extends Component {
 
@@ -44,7 +44,7 @@ class VirtualStreaming extends Component {
             <div className="controls">
 
             </div>
-            <VirtualWorkshopQuestion layout={'equal'} playerLang={playerLang} />
+            <SubtitlesContainer layout={'equal'} playerLang={playerLang} />
           </div>
         </div>
         <div className='mediaplayer'>
