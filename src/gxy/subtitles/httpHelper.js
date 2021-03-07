@@ -4,7 +4,7 @@ import { MSGS_TYPES } from './MessageManager';
 import { exit, getMqttEmitter, join } from '../../helpers/send';
 
 let currentMqttLang;
-export const initWQ = async (onMessage) => {
+export const initWQ = (onMessage) => {
   const ws     = new ReconnectingWebSocket(WEB_SOCKET_WORKSHOP_QUESTION);
   ws.onmessage = ({ data }) => {
     let msg;
@@ -14,37 +14,26 @@ export const initWQ = async (onMessage) => {
       msg = buildClear();
     }
 
+    const { questions } = msg;
+    if (questions) {
+      questions
+        .map(q => wsToMsgAdapter(q))
+        .forEach(onMessage);
+      return;
+    }
+
     if (msg.clear || msg.questions === null)
       msg = buildClear();
-    msg.type = MSGS_TYPES.workshop;
-    onMessage(dataToMsgAdapter(msg));
+    onMessage(wsToMsgAdapter(msg));
   };
 
   return new Promise((res, rej) => {
-    ws.onopen = ({ data }) => {
-      let msg;
-      try {
-        msg = JSON.parse(data);
-      } catch (e) {
-        msg = {};
-      }
-      const { questions } = msg;
-      if (!questions) {
-        const d = buildClear();
-        onMessage({ ...d, type: MSGS_TYPES.workshop });
-        return res();
-      }
-      questions
-        .map(q => dataToMsgAdapter({ ...q, type: MSGS_TYPES.workshop }))
-        .forEach(onMessage);
-      return res();
-    };
+    ws.onopen = (r) => res();
   });
 };
 
 export const initSubtitle = async (lang, onMessage) => {
-
-  if (currentMqttLang === lang)
+  if (!lang)
     return;
 
   currentMqttLang && await exit('subtitles/galaxy/' + currentMqttLang);
@@ -58,15 +47,23 @@ export const initSubtitle = async (lang, onMessage) => {
     console.log('[mqtt] MqttSubtitlesEvent subtitle mqtt listener ', msg);
     if (msg.message === 'clear')
       msg = buildClear();
-    msg.type = MSGS_TYPES.subtitle;
-    onMessage(dataToMsgAdapter(msg));
+    onMessage(mqttToMsgAdapter(msg));
   });
 };
 
-const dataToMsgAdapter = ({ message, language, type }) => {
-  return { message, type, date: Date.now(), language };
+const mqttToMsgAdapter = ({ message, language }) => {
+  return {
+    message: message?.content ? message.content : message,
+    type: MSGS_TYPES.subtitle,
+    date: Date.now(),
+    language
+  };
+};
+
+const wsToMsgAdapter = ({ message, language }) => {
+  return { message, type: MSGS_TYPES.workshop, date: Date.now(), language };
 };
 
 const buildClear = (language = 'all') => {
-  return dataToMsgAdapter({ message: 'clear', language });
+  return { message: 'clear', language };
 };

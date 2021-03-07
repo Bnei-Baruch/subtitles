@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MessageManager } from './MessageManager';
+import { MessageManager, MSGS_TYPES } from './MessageManager';
 import { initSubtitle, initWQ } from './httpHelper';
 import { SubtitlesView } from './SubtitlesView';
 
@@ -8,33 +8,39 @@ export const SUBTITLE_LANG = 'subtitle-lang';
 
 const messageManager = new MessageManager();
 
+const langForCloser             = {};
 export const SubtitlesContainer = ({ playerLang, layout }) => {
   const [last, setLast] = useState();
   const wqLang          = localStorage.getItem(WQ_LANG) || playerLang;
   const subtitleLang    = localStorage.getItem(SUBTITLE_LANG) || playerLang;
+  langForCloser.wqLang  = wqLang;
 
   const wqAvailable = messageManager.getAvailableLangs();
 
-  const onMsgHandler = (data) => {
-    let l;
+  const onMsgHandler = data => {
+    let item;
+    const lang = data.type === MSGS_TYPES.workshop ? langForCloser.wqLang : subtitleLang;
     if (data.message === 'clear') {
-      l = messageManager.clear(data);
+      item = messageManager.clear(data, lang);
     } else {
-      l = messageManager.push(data, wqLang);
+      item = messageManager.push(data, lang);
     }
-    setLast(l);
+    setLast(item);
   };
 
-  useEffect(async () => {
-    await initWQ(onMsgHandler);
+  useEffect(() => {
+    initWQ(onMsgHandler);
   }, []);
 
-  useEffect(async () => {
-    subtitleLang && await initSubtitle(subtitleLang, onMsgHandler);
+  useEffect(() => {
+    subtitleLang && initSubtitle(subtitleLang, onMsgHandler);
   }, [subtitleLang]);
 
-  useEffect(async () => {
-    wqLang && setLast(messageManager.getWQByLang(wqLang));
+  useEffect( () => {
+    if (wqLang) {
+      const l = messageManager.getWQByLang(wqLang);
+      setLast(l);
+    }
   }, [wqLang]);
 
   if (!last && wqAvailable.length === 0)
@@ -46,6 +52,7 @@ export const SubtitlesContainer = ({ playerLang, layout }) => {
       available={wqAvailable}
       layout={layout}
       getWQByLang={messageManager.getWQByLang}
+      wqLang={wqLang}
     />
   );
 };

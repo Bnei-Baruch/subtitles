@@ -54,7 +54,10 @@ export const send = async (msg, retain = true, language) => {
 
     const topic = `${MQTT_TOPIC_BASE}${language}`;
     console.log('[mqtt] Before send: ', topic);
-    mqttClient.publish(topic, JSON.stringify(data), options, (err) => {
+    const json = JSON.stringify(data);
+    //emit my message to player
+    mqttClient.emit('MqttSubtitlesEvent', json);
+    mqttClient.publish(topic, json, options, (err) => {
       console.log('[mqtt] On request from send', err);
       if (!err) {
         res({ msg, language });

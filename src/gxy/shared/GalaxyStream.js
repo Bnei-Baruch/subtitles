@@ -17,7 +17,10 @@ class GalaxyStream extends Component {
       audios: 15,
       user: null
     };
-    this.initApp(props.user);
+  }
+
+  componentDidMount() {
+    this.initApp(this.props.user);
   }
 
   componentWillUnmount() {
@@ -77,9 +80,6 @@ class GalaxyStream extends Component {
           },
           destroyed: () => {
             Janus.error('kill');
-            setTimeout(() => {
-              window.location.reload();
-            }, 5000);
           }
         });
       }
@@ -160,7 +160,7 @@ class GalaxyStream extends Component {
   };
 
   render() {
-    const {appInitError } = this.state;
+    const { appInitError } = this.state;
 
     if (appInitError) {
       return (
