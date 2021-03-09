@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Janus } from '../lib/janus';
+import { Icon, Label, Segment } from 'semantic-ui-react';
+import { audiog_options_sources, gxycol, trllang } from './consts';
 import { GEO_IP_INFO } from './env';
-import api from '../../gxy/shared/Api';
-import GxyJanus from '../../gxy/shared/janus-utils';
+import api from '../shared/Api';
+import GxyJanus from '../shared/janus-utils';
 import { kc } from '../../components/UserManagement/UserManagement';
-import { audiog_options_sources } from './consts';
 
 const audiosByLang = (lang) => audiog_options_sources.find(o => o.key === lang)?.value;
 
@@ -15,19 +16,15 @@ class GalaxyStream extends Component {
     this.state = {
       janus: null,
       videostream: null,
+      audiostream: null,
+      datastream: null,
       audio: null,
-      videos: 1,
-      audios: audiosByLang(props.lang),
+      muted: true,
+      mixvolume: null,
       user: null,
-      audioReady: false
+      talking: null,
+      appInitError: null,
     };
-
-    this.audioElement            = new Audio();
-    this.audioElement.volume     = 0.6;
-    this.audioElement.autoplay   = true;
-    this.audioElement.controls   = false;
-    this.audioElement.muted      = true;
-    this.audioElement.playinline = true;
   }
 
   componentDidMount() {
@@ -39,10 +36,19 @@ class GalaxyStream extends Component {
   };
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.shidurOn != prevProps.shidurOn || this.state.audioReady != prevState.audioReady) {
-      this.audioElement.muted = !this.props.shidurOn;
+    if (this.props.shidurOn != prevProps.shidurOn) {
+      this.play();
+    }
+    if (this.props.lang != prevProps.lang && this.state.janus) {
+      this.initAudioStream(this.state.janus);
     }
   }
+
+  play = () => {
+    this.refs.remoteAudio.muted = !this.props.shidurOn;
+    this.refs.remoteAudio.play();
+    this.refs.remoteVideo.play();
+  };
 
   initApp = (user) => {
     fetch(`${GEO_IP_INFO}`)
@@ -105,14 +111,13 @@ class GalaxyStream extends Component {
   };
 
   initVideoStream = (janus) => {
-    let { videos } = this.state;
     janus.attach({
       plugin: 'janus.plugin.streaming',
       opaqueId: 'videostream-' + Janus.randomString(12),
       success: (videostream) => {
         Janus.log(videostream);
         this.setState({ videostream });
-        videostream.send({ message: { request: 'watch', id: videos } });
+        videostream.send({ message: { request: 'watch', id: 1 } });
       },
       error: (error) => {
         Janus.log('Error attaching plugin: ' + error);
@@ -151,9 +156,10 @@ class GalaxyStream extends Component {
     janus.attach({
       plugin: 'janus.plugin.streaming',
       opaqueId: 'audiostream-' + Janus.randomString(12),
-      success: (audioJanusStream) => {
-        this.audioJanusStream = audioJanusStream;
-        audioJanusStream.send({ message: { request: 'watch', id: 2 } });
+      success: (audiostream) => {
+        Janus.log(audiostream);
+        this.setState({ audiostream });
+        audiostream.send({ message: { request: 'watch', id: audiosByLang(this.props.lang) } });
       },
       error: (error) => {
         Janus.log('Error attaching plugin: ' + error);
@@ -169,39 +175,31 @@ class GalaxyStream extends Component {
           ' packets on mid ' + mid + ' (' + lost + ' lost packets)');
       },
       onmessage: (msg, jsep) => {
-        this.onStreamingMessage(this.audioJanusStream, msg, jsep, false);
+        this.onStreamingMessage(this.state.audiostream, msg, jsep, false);
       },
       onremotetrack: (track, mid, on) => {
-        Janus.log(' ::: Got a remote audio track event :::');
-        Janus.log('Remote audio track (mid=' + mid + ') ' + (on ? 'added' : 'removed') + ':', track);
-        if (!on) {
-          return;
-        }
+        Janus.debug(' ::: Got a remote audio track event :::');
+        Janus.debug('Remote audio track (mid=' + mid + ') ' + (on ? 'added' : 'removed') + ':', track);
+        if (!on) return;
         let stream = new MediaStream();
         stream.addTrack(track.clone());
-        this.audioMediaStream = stream;
-        Janus.attachMediaStream(this.audioElement, stream);
-        this.setState({ audioReady: true });
-        this.audioElement.muted = !this.props.shidurOn;
+        this.setState({ audio_stream: stream });
+        Janus.log('Created remote audio stream:', stream);
+        let audio = this.refs.remoteAudio;
+        Janus.detachMediaStream(audio);
+        Janus.attachMediaStream(audio, stream);
+        this.play();
       },
       oncleanup: () => {
-        Janus.log('Got a cleanup notification - audiostream.');
-        const callbacks                     = [...this.audioJanusStreamCleanup];
-        this.audioJanusStreamCleanup.length = 0;
-        callbacks.forEach(callback => callback());
+        Janus.log('Got a cleanup notification');
       }
     });
   };
 
-  setVideo = (videos) => {
-    this.setState({ videos });
-    this.state.videostream.send({ message: { request: 'switch', id: videos } });
-  };
-
   onStreamingMessage = (handle, msg, jsep, initdata) => {
-    Janus.log(`Got a message ${JSON.stringify(msg)}`);
+    Janus.log('Got a message', msg);
 
-    if (handle !== null && jsep !== undefined && jsep !== null) {
+    if (jsep !== undefined && jsep !== null) {
       Janus.log('Handling SDP as well...', jsep);
 
       // Answer
@@ -210,10 +208,11 @@ class GalaxyStream extends Component {
         media: { audioSend: false, videoSend: false, data: initdata },
         success: (jsep) => {
           Janus.log('Got SDP!', jsep);
-          handle.send({ message: { request: 'start' }, jsep: jsep });
+          let body = { request: 'start' };
+          handle.send({ message: body, jsep: jsep });
         },
         customizeSdp: (jsep) => {
-          Janus.log(':: Modify original SDP: ', jsep);
+          Janus.debug(':: Modify original SDP: ', jsep);
           jsep.sdp = jsep.sdp.replace(/a=fmtp:111 minptime=10;useinbandfec=1\r\n/g, 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1\r\n');
         },
         error: (error) => {
@@ -223,10 +222,8 @@ class GalaxyStream extends Component {
     }
   };
 
-  toggleAudio = (muted) => this.audioElement.muted = muted;
-
   render() {
-    const { appInitError } = this.state;
+    const { muted, talking, appInitError } = this.state;
 
     if (appInitError) {
       return (
@@ -238,22 +235,28 @@ class GalaxyStream extends Component {
     }
 
     return (
-      <div>
-        <video
-          ref="remoteVideo"
-          id="remoteVideo"
-          width="100%"
-          height="100%"
-          autoPlay={true}
-          controls={false}
-          muted={true}
-          playsInline={true} />
-      </div>
+
+      <Segment>
+        <div className='mediaplayer' ref="mediaplayer">
+          <video ref="remoteVideo"
+                 id="remoteVideo"
+                 width="100%"
+                 height="100%"
+                 controls={false}
+                 muted={true}
+                 playsInline={true} />
+          {talking ? <Label className='talk' size='massive' color='red'>
+            <Icon name='microphone' />On
+          </Label> : ''}
+        </div>
+        <audio ref="remoteAudio"
+               id="remoteAudio"
+               controls={false}
+               muted={muted}
+               playsInline={true} />
+      </Segment>
     );
   }
 }
 
 export default GalaxyStream;
-
-
-

@@ -9,8 +9,8 @@ import VirtualStreaming from '../../gxy/shared/VirtualStreaming';
 
 const Home = () => {
   const user       = useSelector((state) => state.auth.user);
+  const playerLang = useSelector((state) => state.language.language);
   const classes    = useStyles();
-  const playerLang = 'en';
   if (!user) {
     return (
       <Paper className={classes.paper}>
