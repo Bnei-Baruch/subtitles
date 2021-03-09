@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import GalaxyStream from './GalaxyStream';
 import { SubtitlesContainer } from '../subtitles/SubtitlesContainer';
+import { Grid, IconButton } from '@material-ui/core';
+import { PlayCircleOutline } from '@material-ui/icons';
+import { grey } from '@material-ui/core/colors';
 
 class VirtualStreaming extends Component {
 
@@ -9,7 +12,8 @@ class VirtualStreaming extends Component {
     room: Number(localStorage.getItem('room')) || null,
     user: {},
     cssFixInterval: null,
-    talking: false
+    talking: false,
+    shidurOn: false,
   };
 
   componentDidMount() {
@@ -36,19 +40,27 @@ class VirtualStreaming extends Component {
 
   render() {
     const { playerLang, user } = this.props;
+    const { shidurOn }         = this.state;
 
     return (
       <div className="video video--broadcast" key='v0' id='video0'>
         <div className="video__overlay">
           <div className={`activities`}>
-            <div className="controls">
-
-            </div>
+            {
+              (!shidurOn) && (<Grid container justify="center" style={{ height: '100%'}}>
+                <IconButton onClick={() => this.setState({ shidurOn: true })}>
+                  <PlayCircleOutline style={{ fontSize: '12em', color: grey[200] }} />
+                </IconButton>
+              </Grid>)
+            }
+            <div className="controls"></div>
             <SubtitlesContainer layout={'equal'} playerLang={playerLang} />
           </div>
         </div>
         <div className='mediaplayer'>
-          <GalaxyStream user={user} />
+          {
+            <GalaxyStream user={user} lang={playerLang} shidurOn={shidurOn} />
+          }
         </div>
       </div>
     );
