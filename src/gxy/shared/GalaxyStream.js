@@ -48,13 +48,10 @@ class GalaxyStream extends Component {
     if (!this.refs.remoteVideo || !this.state.video_stream)
       return;
 
-    const video = this.refs.remoteVideo;
-    Janus.attachMediaStream(video, this.state.video_stream);
-
     const audio = this.refs.remoteAudio;
     audio.muted = !this.props.shidurOn;
 
-    video.play();
+    this.refs.remoteVideo.play();
     audio.play();
 
   };
@@ -152,6 +149,7 @@ class GalaxyStream extends Component {
         stream.addTrack(track.clone());
         this.setState({ video_stream: stream });
         Janus.log('Created remote video stream:', stream);
+        Janus.attachMediaStream(this.refs.remoteVideo, stream);
       },
       oncleanup: () => {
         Janus.log('Got a cleanup notification');
@@ -195,7 +193,7 @@ class GalaxyStream extends Component {
         let audio = this.refs.remoteAudio;
         Janus.detachMediaStream(audio);
         Janus.attachMediaStream(audio, stream);
-        this.play();
+        audio.play();
       },
       oncleanup: () => {
         Janus.log('Got a cleanup notification');
