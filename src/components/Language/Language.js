@@ -25,7 +25,7 @@ const LanguageSelector = () => {
     mq.on('message', (topic, json, packet) => {
       const data = JSON.parse(json);
       console.log('[mqtt] Call on message: ', data, topic, data.message === CLEAR_MSG, data.message === ON_AIR_MSG);
-
+      mq.emit('MqttSubtitlesEvent', json);
       if (data.message === CLEAR_MSG)
         dispatch({ type: SET_BROADCAST, broadcast: false });
       else if (data.message === ON_AIR_MSG)
