@@ -49,7 +49,7 @@ class VirtualStreaming extends Component {
             {
               (!shidurOn) && (<Grid container justify="center" style={{ height: '100%'}}>
                 <IconButton onClick={() => this.setState({ shidurOn: true })}>
-                  <PlayCircleOutline style={{ fontSize: '12em', color: grey[200] }} />
+                  <PlayCircleOutline style={{ fontSize: '10em', color: grey[200] }} />
                 </IconButton>
               </Grid>)
             }

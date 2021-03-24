@@ -45,9 +45,18 @@ class GalaxyStream extends Component {
   }
 
   play = () => {
-    this.refs.remoteAudio.muted = !this.props.shidurOn;
-    this.refs.remoteAudio.play();
-    this.refs.remoteVideo.play();
+    if (!this.refs.remoteVideo || !this.state.video_stream)
+      return;
+
+    const video = this.refs.remoteVideo;
+    Janus.attachMediaStream(video, this.state.video_stream);
+
+    const audio = this.refs.remoteAudio;
+    audio.muted = !this.props.shidurOn;
+
+    video.play();
+    audio.play();
+
   };
 
   initApp = (user) => {
@@ -143,8 +152,6 @@ class GalaxyStream extends Component {
         stream.addTrack(track.clone());
         this.setState({ video_stream: stream });
         Janus.log('Created remote video stream:', stream);
-        let video = this.refs.remoteVideo;
-        Janus.attachMediaStream(video, stream);
       },
       oncleanup: () => {
         Janus.log('Got a cleanup notification');
@@ -244,7 +251,10 @@ class GalaxyStream extends Component {
                  height="100%"
                  controls={false}
                  muted={true}
-                 playsInline={true} />
+                 playsInline={true}
+                 autoPlay={false}
+                 preload={false}
+          />
           {talking ? <Label className='talk' size='massive' color='red'>
             <Icon name='microphone' />On
           </Label> : ''}
