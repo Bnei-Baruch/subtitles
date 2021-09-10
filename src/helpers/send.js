@@ -1,6 +1,7 @@
 import mqtt from 'mqtt';
 import { MQTT_BASE, MQTT_TOPIC_BASE } from '../constants/consts';
 import { kc } from '../components/UserManagement/UserManagement';
+import { randomString } from '../gxy/shared/tools';
 
 let mqttClient  = null;
 let currentLang = null;
@@ -80,6 +81,12 @@ const initMqtt = async () => {
   if (!email || !token)
     return Promise.reject(console.error('[mqtt] Error: connection was not initialized'));
 
+  const transformWsUrl = (url, options, client) => {
+    client.options.clientId = id + "-" + randomString(3);
+    client.options.password = token;
+    return url;
+  };
+
   return new Promise((resolve, reject) => {
     console.log('[mqtt] on init promise start');
 
@@ -92,6 +99,7 @@ const initMqtt = async () => {
       clean: true,
       username: email,
       password: token,
+      transformWsUrl,
       properties: {
         sessionExpiryInterval: 5,
         maximumPacketSize: 10000,
@@ -115,3 +123,4 @@ const initMqtt = async () => {
     mqttClient.on('disconnect', data => console.error('[mqtt] Error: ', data));
   });
 };
+
