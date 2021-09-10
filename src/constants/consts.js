@@ -27,7 +27,7 @@ export const languages          = [
   { key: 'in', name: 'Hindi' },
   { key: 'ir', name: 'Persian' },
 ];
-export const MQTT_BASE          = 'wss://mqtt.kli.one/';
+export const MQTT_BASE          = 'wss://msg.kab.sh/';
 export const MQTT_TOPIC_BASE    = 'subtitles/galaxy/';
 export const ON_AIR_MSG         = 'on_air';
 export const CLEAR_MSG          = 'clear';
